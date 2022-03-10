@@ -3,6 +3,7 @@ using Gist2.Extensions.LinqExt;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace GenericDatabase.Collection {
 
@@ -12,6 +13,7 @@ namespace GenericDatabase.Collection {
 		where R : IRow<DB, T, R> {
 
 		protected Dictionary<int, R> table = new Dictionary<int, R>();
+		protected int idCounter = 0;
 
 		public DictionaryTable(DB db) {
 			this.Database = db;
@@ -44,17 +46,25 @@ namespace GenericDatabase.Collection {
 		#endregion
 
 		#region ITable
-		public DB Database { get; }
+		public virtual DB Database { get; }
 
-		public bool Add(R item) {
+		public virtual bool Add(R item) {
 			var isNew = !table.ContainsKey(item.Key);
 			table.Add(item.Key, item);
 			return isNew;
 		}
-		public bool Remove(int key) => table.Remove(key);
-		public bool Contains(int key) => table.ContainsKey(key);
+		public virtual bool Remove(int key) => table.Remove(key);
+		public virtual bool Contains(int key) => table.ContainsKey(key);
+
+		public virtual R CreateRow() => (R)CTOR.Invoke(new object[] { Database, this, CreateUniqueID() });
 		#endregion
 
+		#endregion
+
+		#region member
+		protected virtual int CreateUniqueID() => idCounter++;
+		protected virtual ConstructorInfo CTOR { get; } = typeof(R).GetConstructor(
+			BindingFlags.Instance | BindingFlags.Public, null, new[] { typeof(DB), typeof(T), typeof(int) }, null);
 		#endregion
 	}
 }

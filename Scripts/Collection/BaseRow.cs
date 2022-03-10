@@ -16,9 +16,9 @@ namespace GenericDatabase.Collection {
 			this.Key = key;
 		}
 
-		public DB Database { get; }
-		public T Table { get; }
-		public int Key { get; }
+		public virtual DB Database { get; }
+		public virtual T Table { get; }
+		public virtual int Key { get; }
 
 	}
 }
