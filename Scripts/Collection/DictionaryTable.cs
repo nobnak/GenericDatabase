@@ -56,7 +56,8 @@ namespace GenericDatabase.Collection {
 		public virtual bool Remove(int key) => table.Remove(key);
 		public virtual bool Contains(int key) => table.ContainsKey(key);
 
-		public virtual R CreateRow() => (R)CTOR.Invoke(new object[] { Database, this, CreateUniqueID() });
+		public virtual R CreateRow(int key) => (R)CTOR.Invoke(new object[] { Database, this, key });
+		public virtual R CreateRow() => CreateRow(CreateUniqueID());
 		#endregion
 
 		#endregion

@@ -15,6 +15,7 @@ namespace GenericDatabase.Interfaces {
 		bool Contains(int key);
 		bool Remove(int key);
 
+		R CreateRow(int key);
 		R CreateRow();
 	}
 }
