@@ -29,9 +29,9 @@ namespace GenericDatabase.Collection {
 		#region ICollection
 		public int Count => table.Count;
 		public bool IsReadOnly => false;
-		void ICollection<R>.Add(R item) => Add(item);
-		public bool Remove(R item) => table.Remove(item.Key);
-		public void Clear() => table.Clear();
+		void ICollection<R>.Add(R item) => _Add(item);
+		public bool Remove(R item) => _Remove(item.Key);
+		public void Clear() => _Clear();
 		public bool Contains(R item) => table.ContainsKey(item.Key);
 		public void CopyTo(R[] array, int arrayIndex) => table.Values.CopyTo(array, arrayIndex);
 		#endregion
@@ -48,22 +48,26 @@ namespace GenericDatabase.Collection {
 		#region ITable
 		public virtual DB Database { get; }
 
-		public virtual bool Add(R item) {
-			var isNew = !table.ContainsKey(item.Key);
-			table.Add(item.Key, item);
-			return isNew;
-		}
-		public virtual bool Remove(int key) => table.Remove(key);
+		public virtual bool Add(R item) => _Add(item);
+		public virtual bool Remove(int key) => _Remove(key);
 		public virtual bool Contains(int key) => table.ContainsKey(key);
 
 		public virtual R CreateRow(int key) => (R)CTOR.Invoke(new object[] { Database, this, key });
 		public virtual R CreateRow() => CreateRow(CreateUniqueID());
 		#endregion
 
+		public virtual int CreateUniqueID() => idCounter++;
 		#endregion
 
 		#region member
-		protected virtual int CreateUniqueID() => idCounter++;
+		protected virtual bool _Add(R item) {
+			var isNew = !table.ContainsKey(item.Key);
+			table.Add(item.Key, item);
+			return isNew;
+		}
+		protected virtual bool _Remove(int key) => table.Remove(key);
+		protected virtual void _Clear() => table.Clear();
+
 		protected virtual ConstructorInfo CTOR { get; } = typeof(R).GetConstructor(
 			BindingFlags.Instance | BindingFlags.Public, null, new[] { typeof(DB), typeof(T), typeof(int) }, null);
 		#endregion
