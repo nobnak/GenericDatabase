@@ -62,7 +62,7 @@ namespace GenericDatabase.Collection {
 		#region member
 		protected virtual bool _Add(R item) {
 			var isNew = !table.ContainsKey(item.Key);
-			table.Add(item.Key, item);
+			table[item.Key] = item;
 			return isNew;
 		}
 		protected virtual bool _Remove(int key) => table.Remove(key);
