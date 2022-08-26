@@ -7,13 +7,13 @@ using System.Reflection;
 
 namespace GenericDatabase.Collection {
 
-	public class DictionaryTable<DB, T, R> : ITable<DB, T, R>
+	public class DictionaryTable<DB, T, R, TKey> : ITable<DB, T, R, TKey>
 		where DB : IDatabase
-		where T : ITable<DB, T, R>
-		where R : IRow<DB, T, R> {
+		where T : ITable<DB, T, R, TKey>
+		where R : IRow<DB, T, R, TKey> {
 
-		protected Dictionary<int, R> table = new Dictionary<int, R>();
-		protected int idCounter = 0;
+		protected Dictionary<TKey, R> table = new Dictionary<TKey, R>();
+		//protected int idCounter = 0;
 
 		public DictionaryTable(DB db) {
 			this.Database = db;
@@ -37,26 +37,26 @@ namespace GenericDatabase.Collection {
 		#endregion
 
 		#region IReadOnlyDictionary
-		public IEnumerable<int> Keys => table.Keys;
+		public IEnumerable<TKey> Keys => table.Keys;
 		public IEnumerable<R> Values => table.Values;
-		public R this[int key] => table[key];
-		public bool ContainsKey(int key) => table.ContainsKey(key);
-		public bool TryGetValue(int key, out R value) => table.TryGetValue(key, out value);
-		IEnumerator<KeyValuePair<int, R>> IEnumerable<KeyValuePair<int, R>>.GetEnumerator() => table.GetEnumerator();
+		public R this[TKey key] => table[key];
+		public bool ContainsKey(TKey key) => table.ContainsKey(key);
+		public bool TryGetValue(TKey key, out R value) => table.TryGetValue(key, out value);
+		IEnumerator<KeyValuePair<TKey, R>> IEnumerable<KeyValuePair<TKey, R>>.GetEnumerator() => table.GetEnumerator();
 		#endregion
 
 		#region ITable
 		public virtual DB Database { get; }
 
 		public virtual bool Add(R item) => _Add(item);
-		public virtual bool Remove(int key) => _Remove(key);
-		public virtual bool Contains(int key) => table.ContainsKey(key);
+		public virtual bool Remove(TKey key) => _Remove(key);
+		public virtual bool Contains(TKey key) => table.ContainsKey(key);
 
-		public virtual R CreateRow(int key) => (R)CTOR.Invoke(new object[] { Database, this, key });
-		public virtual R CreateRow() => CreateRow(CreateUniqueID());
+		public virtual R CreateRow(TKey key) => (R)CTOR.Invoke(new object[] { Database, this, key });
+		//public virtual R CreateRow() => CreateRow(CreateUniqueID());
 		#endregion
 
-		public virtual int CreateUniqueID() => idCounter++;
+		//public virtual int CreateUniqueID() => idCounter++;
 		#endregion
 
 		#region member
@@ -65,7 +65,7 @@ namespace GenericDatabase.Collection {
 			table[item.Key] = item;
 			return isNew;
 		}
-		protected virtual bool _Remove(int key) => table.Remove(key);
+		protected virtual bool _Remove(TKey key) => table.Remove(key);
 		protected virtual void _Clear() => table.Clear();
 
 		protected virtual ConstructorInfo CTOR { get; } = typeof(R).GetConstructor(

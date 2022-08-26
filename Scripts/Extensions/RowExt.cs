@@ -1,18 +1,19 @@
 using GenericDatabase.Interfaces;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting.YamlDotNet.Core.Tokens;
 using UnityEngine;
 
 namespace GenericDatabase.Extensions {
 
 	public static class RowExt {
 
-		public static bool IsInTable<DB, T, R>(this IRow<DB, T, R> r)
-			where DB : IDatabase where T : ITable<DB, T, R> where R : IRow<DB, T, R>
-			=> r.Table.Contains(r.Key);
+		public static bool IsInTable<DB, T, R, TKey>(this IRow<DB, T, R, TKey> r)
+			where DB : IDatabase where T : ITable<DB, T, R, TKey> where R : IRow<DB, T, R, TKey>
+		=> r.Table.Contains(r.Key);
 
-		public static bool Remove<DB, T, R>(this IRow<DB, T, R> r)
-			where DB : IDatabase where T : ITable<DB, T, R> where R : IRow<DB, T, R>
+		public static bool Remove<DB, T, R, TKey>(this IRow<DB, T, R, TKey> r)
+			where DB : IDatabase where T : ITable<DB, T, R, TKey> where R : IRow<DB, T, R, TKey>
 			=> r.Table.Remove(r.Key);
 	}
 }

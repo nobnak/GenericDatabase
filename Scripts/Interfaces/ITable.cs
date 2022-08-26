@@ -4,18 +4,18 @@ using UnityEngine;
 
 namespace GenericDatabase.Interfaces {
 
-	public interface ITable<out DB, out T, R> : ICollection<R>, IReadOnlyDictionary<int, R> 
+	public interface ITable<out DB, out T, R, TKey> : ICollection<R>, IReadOnlyDictionary<TKey, R> 
 		where DB : IDatabase
-		where T : ITable<DB, T, R>
-		where R : IRow<DB, T, R> {
+		where T : ITable<DB, T, R, TKey>
+		where R : IRow<DB, T, R, TKey> {
 
 		DB Database { get; }
 
 		new bool Add(R item);
-		bool Contains(int key);
-		bool Remove(int key);
+		bool Contains(TKey key);
+		bool Remove(TKey key);
 
-		R CreateRow(int key);
-		R CreateRow();
+		R CreateRow(TKey key);
+		//R CreateRow();
 	}
 }
