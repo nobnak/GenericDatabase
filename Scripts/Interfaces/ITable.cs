@@ -4,7 +4,9 @@ using UnityEngine;
 
 namespace GenericDatabase.Interfaces {
 
-	public interface ITable<out DB, out T, R, TKey> : ICollection<R>, IReadOnlyDictionary<TKey, R> 
+	public interface ITable<out DB, out T, R, TKey> : 
+		ICollection<R>, 
+		IReadOnlyDictionary<TKey, R> 
 		where DB : IDatabase
 		where T : ITable<DB, T, R, TKey>
 		where R : IRow<DB, T, R, TKey> {
